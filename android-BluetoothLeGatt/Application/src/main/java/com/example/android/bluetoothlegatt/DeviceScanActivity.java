@@ -36,12 +36,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.primitives.Bytes; //method: Bytes.indexOf(byte[] array, byte[] target)
+
 import java.util.ArrayList;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 public class DeviceScanActivity extends ListActivity {
+    private final byte[] RX_FROM_TEMPO_SERVICE = {
+            (byte)0x11, // Advertising payload len
+            (byte)0x07, // Advertising Packet Type containing UUID
+
+            //CarePredict Tempo BLE UUID
+            //LSB <----------------> MSB
+            (byte) 0xfb, (byte) 0x34, (byte) 0x9b, (byte) 0x5f, (byte) 0x80, (byte) 0x00,
+            (byte) 0x00, (byte) 0x80, (byte) 0x00, (byte) 0x10, (byte) 0x00, (byte) 0x00,
+            (byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0x00
+    };
+
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
@@ -250,12 +263,17 @@ public class DeviceScanActivity extends ListActivity {
             new BluetoothAdapter.LeScanCallback() {
 
         @Override
-        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+        public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLeDeviceListAdapter.addDevice(device);
-                    mLeDeviceListAdapter.notifyDataSetChanged();
+                    //BLE advertisement discovered
+                    if (Bytes.indexOf(scanRecord, RX_FROM_TEMPO_SERVICE) != -1) {
+                        //found CarePredict BLE-Service UUID
+                        //list all devices that match
+                        mLeDeviceListAdapter.addDevice(device);
+                        mLeDeviceListAdapter.notifyDataSetChanged();
+                    }
                 }
             });
         }

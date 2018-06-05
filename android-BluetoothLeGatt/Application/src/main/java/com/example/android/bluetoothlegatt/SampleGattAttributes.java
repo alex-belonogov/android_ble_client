@@ -33,6 +33,10 @@ public class SampleGattAttributes {
         // Sample Characteristics.
         attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
         attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
+
+        //easily identify Tempo service
+        attributes.put("000000FF-0000-1000-8000-00805f9b34fb", "CarePredict Tempo Service");
+        attributes.put("0000FF01-0000-1000-8000-00805f9b34fb", "Read Write Indication Characteristic");
     }
 
     public static String lookup(String uuid, String defaultName) {
