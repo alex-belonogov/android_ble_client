@@ -18,6 +18,7 @@ package com.example.android.bluetoothlegatt;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -38,6 +39,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -64,6 +66,43 @@ public class DeviceControlActivity extends Activity {
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+
+
+
+
+
+    // Automatically enable notification from Tempo (BLE CCCD)
+    // This will tell the Tempo that it can transmit data at will
+    private static final String INDICATION_CHARACTERISTIC = "0000ff01-0000-1000-8000-00805f9b34fb";
+    private StringBuilder mBuff = new StringBuilder();
+    private enum NotificationType {
+        NOTIFY, INDICATE
+    }
+    private boolean setGattNotification(NotificationType type, boolean enable_notify) {
+        BluetoothGattDescriptor descriptor = mNotifyCharacteristic.getDescriptor(
+                UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+        if (descriptor != null) {
+            if (enable_notify) {
+                if (type == NotificationType.NOTIFY) {
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                } else {
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                }
+            } else {
+                descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+            }
+            mBluetoothLeService.writeDescriptor(descriptor);
+        } else {
+            Log.w(TAG, "Couldn't get CLIENT_CHARACTERISTIC_CONFIG.");
+            return false;
+        }
+        return true;
+    }
+
+
+
+
+
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -136,11 +175,20 @@ public class DeviceControlActivity extends Activity {
                             }
                             mBluetoothLeService.readCharacteristic(characteristic);
                         }
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+
+                        //add support for NOTIFY + INDICATE, ensure 'charaProp' is not 0
+                        if ((charaProp & (BluetoothGattCharacteristic.PROPERTY_INDICATE |
+                                BluetoothGattCharacteristic.PROPERTY_NOTIFY)) > 0){
                             mNotifyCharacteristic = characteristic;
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    characteristic, true);
+                            mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                         }
+
+                        //check to see if Tempo CCCD indication field is available
+                        if (characteristic.getUuid().toString().equalsIgnoreCase(INDICATION_CHARACTERISTIC)) {
+                            setGattNotification(NotificationType.INDICATE, true);
+                        }
+
+
                         return true;
                     }
                     return false;
