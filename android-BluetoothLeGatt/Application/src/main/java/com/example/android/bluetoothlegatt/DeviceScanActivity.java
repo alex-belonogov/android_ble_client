@@ -45,14 +45,14 @@ import java.util.ArrayList;
  */
 public class DeviceScanActivity extends ListActivity {
     private final byte[] RX_FROM_TEMPO_SERVICE = {
-            (byte)0x11, // Advertising payload len
-            (byte)0x07, // Advertising Packet Type containing UUID
+            (byte)0x12, // payload len
+            (byte)0x09, // Device Name
 
-            //CarePredict Tempo BLE UUID
-            //LSB <----------------> MSB
-            (byte) 0xfb, (byte) 0x34, (byte) 0x9b, (byte) 0x5f, (byte) 0x80, (byte) 0x00,
-            (byte) 0x00, (byte) 0x80, (byte) 0x00, (byte) 0x10, (byte) 0x00, (byte) 0x00,
-            (byte) 0xFF, (byte) 0x00, (byte) 0x00, (byte) 0x00
+            //name: CarePredict_TEMPO
+            (byte) 0x43, (byte) 0x61, (byte) 0x72, (byte) 0x65, (byte) 0x50,
+            (byte) 0x72, (byte) 0x65, (byte) 0x64, (byte) 0x69, (byte) 0x63,
+            (byte) 0x74, (byte) 0x5f, (byte) 0x54, (byte) 0x45, (byte) 0x4d,
+            (byte) 0x50, (byte) 0x4f
     };
 
     private LeDeviceListAdapter mLeDeviceListAdapter;
