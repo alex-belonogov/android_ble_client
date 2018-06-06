@@ -183,9 +183,9 @@ public class DeviceControlActivity extends Activity {
                             mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                         }
 
-                        //check to see if Tempo CCCD indication field is available
+                        //check to see if Tempo CCCD indication field is available and enable notifications
                         if (characteristic.getUuid().toString().equalsIgnoreCase(INDICATION_CHARACTERISTIC)) {
-                            setGattNotification(NotificationType.INDICATE, true);
+                            setGattNotification(NotificationType.NOTIFY, true);
                         }
 
 
