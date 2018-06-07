@@ -27,8 +27,8 @@ public class SampleGattAttributes {
 
     static {
         //easily identify Tempo service -- must be lower case
-        attributes.put("000000ff-0000-1000-8000-00805f9b34fb", "CarePredict Tempo Service");
-        attributes.put("0000ff01-0000-1000-8000-00805f9b34fb", "Read Write Indication Characteristic");
+        attributes.put("000000ff-0000-1000-8000-00805f9b34fb", "Tempo WiFi RSSI Service");
+        attributes.put("0000ff01-0000-1000-8000-00805f9b34fb", "Click here to start wifi scanning");
     }
 
     public static String lookup(String uuid, String defaultName) {
