@@ -159,26 +159,22 @@ public class DeviceControlActivity extends Activity {
     private final ExpandableListView.OnChildClickListener servicesListClickListner =
             new ExpandableListView.OnChildClickListener() {
                 @Override
-                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                            int childPosition, long id) {
+                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                     if (mGattCharacteristics != null) {
-                        final BluetoothGattCharacteristic characteristic =
-                                mGattCharacteristics.get(groupPosition).get(childPosition);
+                        final BluetoothGattCharacteristic characteristic = mGattCharacteristics.get(groupPosition).get(childPosition);
                         final int charaProp = characteristic.getProperties();
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                             // If there is an active notification on a characteristic, clear
                             // it first so it doesn't update the data field on the user interface.
                             if (mNotifyCharacteristic != null) {
-                                mBluetoothLeService.setCharacteristicNotification(
-                                        mNotifyCharacteristic, false);
+                                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
                                 mNotifyCharacteristic = null;
                             }
                             mBluetoothLeService.readCharacteristic(characteristic);
                         }
 
                         //add support for NOTIFY + INDICATE, ensure 'charaProp' is not 0
-                        if ((charaProp & (BluetoothGattCharacteristic.PROPERTY_INDICATE |
-                                BluetoothGattCharacteristic.PROPERTY_NOTIFY)) > 0){
+                        if ((charaProp & (BluetoothGattCharacteristic.PROPERTY_INDICATE | BluetoothGattCharacteristic.PROPERTY_NOTIFY)) > 0){
                             mNotifyCharacteristic = characteristic;
                             mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                         }
